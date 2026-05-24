@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import css from "./Modal.module.css";
@@ -11,9 +11,11 @@ interface ModalProps {
   onClose: () => void;
 }
 
-const modalRoot = document.getElementById("modal-root")!;
-
 function Modal({ children, onClose }: ModalProps) {
+  const [modalRoot] = useState<HTMLElement | null>(() =>
+    typeof document !== "undefined" ? document.getElementById("modal-root") : null
+  );
+
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent): void => {
       if (event.key === "Escape") {
@@ -23,14 +25,11 @@ function Modal({ children, onClose }: ModalProps) {
 
     window.addEventListener("keydown", handleEscape);
 
-    // 🔒 Блокуємо прокрутку сторінки
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     return () => {
       window.removeEventListener("keydown", handleEscape);
-
-      // 🔓 Повертаємо прокрутку при закритті
       document.body.style.overflow = originalOverflow;
     };
   }, [onClose]);
@@ -42,6 +41,8 @@ function Modal({ children, onClose }: ModalProps) {
       onClose();
     }
   };
+
+  if (!modalRoot) return null;
 
   return createPortal(
     <div
@@ -57,3 +58,5 @@ function Modal({ children, onClose }: ModalProps) {
 }
 
 export default Modal;
+
+
