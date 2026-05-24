@@ -37,7 +37,10 @@ function NoteForm({ onClose }: NoteFormProps) {
   const createMutation = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
+      // інвалідація кешу
       queryClient.invalidateQueries({ queryKey: ["notes"] });
+
+      // закриття модалки після успіху
       onClose();
     },
   });
@@ -53,8 +56,9 @@ function NoteForm({ onClose }: NoteFormProps) {
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={(values, { resetForm }) => {
-        createMutation.mutate(values);
-        resetForm();
+        createMutation.mutate(values, {
+          onSuccess: () => resetForm(),
+        });
       }}
     >
       <Form className={css.form}>
