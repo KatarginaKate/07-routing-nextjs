@@ -56,3 +56,23 @@ export async function fetchNoteById(id: string): Promise<Note> {
   const response = await axios.get<Note>(`/notes/${id}`);
   return response.data;
 }
+
+export const getNotes = async (tag?: string): Promise<FetchNotesResponse> => {
+  const res = await axios.get<FetchNotesResponse>("/notes", {
+    params: tag ? { tag } : {},
+  });
+  return res.data;
+};
+
+export type Category = {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const getCategories = async () => {
+  const res = await axios<Category[]>('/categories');
+  return res.data;
+};
