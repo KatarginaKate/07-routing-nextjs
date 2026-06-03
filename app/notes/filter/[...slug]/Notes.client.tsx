@@ -12,28 +12,27 @@ import NoteList from "@/components/NoteList/NoteList";
 import NoteForm from "@/components/NoteForm/NoteForm";
 import css from "./NotesPage.module.css";
 
-export default function NotesClient({ category }: { category?: string }) {
+export default function NotesClient({ category }: { category?: string | "all" }) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
   const isFiltered = Boolean(category);
 
-  const { data } = useQuery({
-  queryKey: ["notes", page, search, category || ""],
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["notes", page, search, category || ""],
 
-  queryFn: () =>
-    fetchNotes({
-      page,
-      perPage: 12,
-      search,
-      tag: category || undefined,
-    }),
+    queryFn: () =>
+      fetchNotes({
+        page,
+        perPage: 12,
+        search,
+        tag:
+          category && category !== "all"
+            ? category
+            : undefined,
+      }),
 
-  placeholderData: (prev) => prev,
-});
-  const { isLoading, isError } = useQuery({
-  queryKey: ["notes", page, search, category || ""],
     placeholderData: (prev) => prev,
   });
 
