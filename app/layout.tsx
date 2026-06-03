@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
   sidebar,
-  modal,
+  modal
 }: Readonly<{
   children: React.ReactNode;
   sidebar: React.ReactNode;
@@ -32,16 +32,16 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
+        {modal}
         <Providers>
           <Header />
           <main>
             {sidebar && <aside>{sidebar}</aside>}
             {children}
+            <div id="modal-root"></div>
           </main>
           <Footer />
-          {modal}
         </Providers>
-        <div id="modal-root" />
       </body>
     </html>
   );

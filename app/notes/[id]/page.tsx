@@ -6,6 +6,7 @@ import {
 
 import { fetchNoteById } from "@/lib/api";
 import NotePreview from "@/components/NotePreview/NotePreview";
+import Modal from "@/components/Modal/Modal";
 
 interface NoteDetailsPageProps {
   params: {
@@ -26,12 +27,10 @@ export default async function NoteDetailsPage({
   });
 
   return (
-    <HydrationBoundary
-      state={dehydrate(queryClient)}
-    >
-      <NotePreview id={id} />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Modal>
+        <NotePreview id={id} />
+      </Modal>
     </HydrationBoundary>
   );
 }
-
-

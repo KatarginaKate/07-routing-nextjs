@@ -1,62 +1,48 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 
 import css from "./Modal.module.css";
 
 interface ModalProps {
   children: ReactNode;
-  onClose: () => void;
 }
 
-function Modal({ children, onClose }: ModalProps) {
-  const [modalRoot] = useState<HTMLElement | null>(() =>
-    typeof document !== "undefined" ? document.getElementById("modal-root") : null
-  );
+export default function Modal({ children }: ModalProps) {
+  const router = useRouter();
+
+  const onClose = () => router.back();
 
   useEffect(() => {
-    const handleEscape = (event: KeyboardEvent): void => {
-      if (event.key === "Escape") {
-        onClose();
-      }
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
     };
 
     window.addEventListener("keydown", handleEscape);
-
-    const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     return () => {
       window.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = originalOverflow;
+      document.body.style.overflow = "";
     };
-  }, [onClose]);
+  }, []);
 
   const handleBackdropClick = (
-    event: React.MouseEvent<HTMLDivElement>
-  ): void => {
-    if (event.target === event.currentTarget) {
-      onClose();
-    }
+    e: React.MouseEvent<HTMLDivElement>
+  ) => {
+    if (e.target === e.currentTarget) onClose();
   };
 
-  if (!modalRoot) return null;
+  // ⚠️ ВАЖЛИВО: тільки client render
+  if (typeof window === "undefined") return null;
 
   return createPortal(
-    <div
-      className={css.backdrop}
-      role="dialog"
-      aria-modal="true"
-      onClick={handleBackdropClick}
-    >
+    <div className={css.backdrop} onClick={handleBackdropClick}>
       <div className={css.modal}>{children}</div>
     </div>,
-    modalRoot
+    document.body
   );
 }
-
-export default Modal;
-
-
