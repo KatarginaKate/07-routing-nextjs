@@ -9,7 +9,6 @@ import { fetchNotes, getNotes } from "@/lib/api";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import NoteList from "@/components/NoteList/NoteList";
-import Modal from "@/components/Modal/Modal";
 import NoteForm from "@/components/NoteForm/NoteForm";
 import css from "./NotesPage.module.css";
 
@@ -77,9 +76,9 @@ export default function NotesClient({ category }: { category?: string }) {
       {notes.length > 0 && <NoteList notes={notes} />}
 
       {isOpen && (
-        <Modal>
+        
           <NoteForm onClose={() => setIsOpen(false)} />
-        </Modal>
+        
       )}
     </div>
   );

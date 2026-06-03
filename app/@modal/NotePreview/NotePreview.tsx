@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import css from "./NotePreview.module.css";
 import { useRouter } from "next/navigation";
-import Modal from "../Modal/Modal";
+import Modal from "@/components/Modal/Modal";
 
 async function fetchNoteById(id: string) {
   const res = await fetch(`https://notehub-public.goit.study/api/notes/${id}`);
@@ -27,7 +27,7 @@ export default function NotePreview({ id }: { id: string }) {
   }
 
   return (
-    <Modal>
+    <Modal onClose={() => router.back()}>
       <div className={css.container}>
         <button className={css.backBtn} onClick={() => router.back()}>
           ← Back
