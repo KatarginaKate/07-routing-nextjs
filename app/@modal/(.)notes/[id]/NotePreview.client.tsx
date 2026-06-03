@@ -1,29 +1,73 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import css from "./NotePreview.module.css";
 import { useRouter } from "next/navigation";
+
+import css from "./NotePreview.module.css";
 import Modal from "@/components/Modal/Modal";
-import {fetchNoteById} from "@/lib/api";
+import { fetchNoteById } from "@/lib/api";
 
 export default function NotePreview({ id }: { id: string }) {
   const router = useRouter();
 
-  const { data: note, isLoading } = useQuery({
+  const {
+    data: note,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
     enabled: !!id,
     refetchOnMount: false,
   });
 
-  if (isLoading || !note) {
+  const handleClose = () => router.back();
+
+  // ✅ LOADING
+  if (isLoading) {
     return <div className={css.container}>Loading...</div>;
   }
 
+  // ❌ ERROR (це те, чого не вистачало по рев’ю)
+  if (isError) {
+    return (
+      <Modal onClose={handleClose}>
+        <div className={css.container}>
+          <p>Failed to load note</p>
+
+          {error instanceof Error && (
+            <p>{error.message}</p>
+          )}
+
+          <button className={css.backBtn} onClick={handleClose}>
+            ← Back
+          </button>
+        </div>
+      </Modal>
+    );
+  }
+
+  // ❌ fallback якщо немає даних
+  if (!note) {
+    return (
+      <Modal onClose={handleClose}>
+        <div className={css.container}>
+          <p>Note not found</p>
+
+          <button className={css.backBtn} onClick={handleClose}>
+            ← Back
+          </button>
+        </div>
+      </Modal>
+    );
+  }
+
+  // ✅ SUCCESS
   return (
-    <Modal onClose={() => router.back()}>
+    <Modal onClose={handleClose}>
       <div className={css.container}>
-        <button className={css.backBtn} onClick={() => router.back()}>
+        <button className={css.backBtn} onClick={handleClose}>
           ← Back
         </button>
 
