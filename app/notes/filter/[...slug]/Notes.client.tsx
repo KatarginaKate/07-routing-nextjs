@@ -12,25 +12,20 @@ import NoteList from "@/components/NoteList/NoteList";
 import NoteForm from "@/components/NoteForm/NoteForm";
 import css from "./NotesPage.module.css";
 
-export default function NotesClient({ category }: { category?: string | "all" }) {
+export default function NotesClient({ category }: { category: string }) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
-  const isFiltered = Boolean(category);
-
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["notes", page, search, category || ""],
+    queryKey: ["notes", page, search, category],
 
     queryFn: () =>
       fetchNotes({
         page,
         perPage: 12,
         search,
-        tag:
-          category && category !== "all"
-            ? category
-            : undefined,
+        ...(category === "all" ? { tag: undefined } : { tag: category }),
       }),
 
     placeholderData: (prev) => prev,
@@ -54,19 +49,17 @@ export default function NotesClient({ category }: { category?: string | "all" })
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        {!isFiltered && (
-          <>
-            <SearchBox onSearch={handleSearch} />
+        <>
+          <SearchBox onSearch={handleSearch} />
 
-            {totalPages > 1 && (
-              <Pagination
-                totalPages={totalPages}
-                currentPage={page}
-                onPageChange={handlePageChange}
-              />
-            )}
-          </>
-        )}
+          {totalPages > 1 && (
+            <Pagination
+              totalPages={totalPages}
+              currentPage={page}
+              onPageChange={handlePageChange}
+            />
+          )}
+        </>
 
         <button className={css.button} onClick={() => setIsOpen(true)}>
           Create note +
